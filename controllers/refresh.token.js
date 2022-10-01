@@ -10,7 +10,7 @@ export const refreshToken = async (req, res) => {
             return res.status(401).json({
                 code: 401,
                 status: "UNAUTHORIZED"
-            })
+            });
         } else { // compare token with database
             const user = await Users.findAll({
                 where: {
@@ -25,7 +25,7 @@ export const refreshToken = async (req, res) => {
                 });
             } else { // if refreshToken = refresh_token from db
                 /* verify token using jwt */
-                jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decode) => {
+                jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
                     /* if not verified */
                     if (err) {
                         return res.status(403).json({
@@ -38,16 +38,16 @@ export const refreshToken = async (req, res) => {
                         const email = user[0].email;
 
                         /* create new accestoken */
-                        const accestoken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET, {
+                        const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET, {
                             expiresIn: '15s'
                         });
                         /* send accesToken to client */
-                        res.json({ accestoken });
+                        res.json({ accessToken });
                     }
                 });
             }
         }
     } catch (error) {
-        
+        console.log(error);
     }
-}
+};

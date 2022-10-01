@@ -23,12 +23,13 @@ export const getUsers = async (req, res) => {
 export const Register = async (req, res) => {
     const { name, email, password, confPassword } = req.body;
     /* conditional cheked password */
-    if (password !== confPassword)
+    if (password !== confPassword) {
         return res.status(400).json({
             code: 400,
             status: "BAD_REQUEST",
             messange: "Password and Confirm Password doesn't match"
-        })
+        });
+    } else {
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
     try {
@@ -37,13 +38,14 @@ export const Register = async (req, res) => {
             email: email,
             password: hashPassword
         });
-        res.json({
+        res.status(200).json({
             code: 200,
             status: "OK",
             message: "Berhasil Register"
         });
     } catch (error) {
         console.log(error);
+        }
     }
 };
 
@@ -70,7 +72,7 @@ export const Login = async (req, res) => {
             const name = user[0].name;
             const email = user[0].email;
             const accessToken = jwt.sign({ userId, name, email }, process.env.ACCESS_TOKEN_SECRET, {
-                expiresIn: '20s'
+                expiresIn: '15s'
             });
             const refreshToken = jwt.sign({ userId, name, email }, process.env.REFRESH_TOKEN_SECRET, {
                 expiresIn: '1d'
@@ -88,7 +90,7 @@ export const Login = async (req, res) => {
                 httpOnly: true,
                 maxAge: 24 * 60 * 60 * 1000
                 // secure: true // if using https
-            })
+            });
 
             /* send to client refreshToken */
             res.status(200).json({
@@ -103,5 +105,43 @@ export const Login = async (req, res) => {
             status: "NOT_FOUND",
             message: "Email user tidak terdaftar"
         })
+    }
+}
+
+/* create method/function logout */
+export const Logout = async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+        /* conditional check refreshToken*/
+    if (!refreshToken) {
+        return res.status(204).json({
+            code: 204,
+            status: "NO_CONTENT"
+        });
+    } else { // compare token with database
+        const user = await Users.findAll({
+            where: {
+                refresh_token: refreshToken
+            }
+        });
+        /* condition to check if not match refresh_token */
+        if (!user[0]) {
+            return res.status(204).json({
+                code: 204,
+                status: "NO_CONTENT"
+            });
+        } else {
+            const userId = user[0].id;
+            /* update refreshToken set to null */
+            await Users.update({ refresh_token: null }, {
+                where: {
+                    id: userId
+                }
+            });
+            res.clearCookie('refreshToken');
+            return res.status(200).json({
+                code: 200,
+                status: "OK"
+            });
+        }
     }
 }

@@ -7,7 +7,7 @@ export const verifyToken = (req, res, next) => {
     /* initate token */
     const token = authHeader && authHeader.split(' ')[1];
     if (token == null) {
-        return res.status(400).json({
+        return res.status(401).json({
             code: 401,
             status: "UNAUTHORIZED"
         })
