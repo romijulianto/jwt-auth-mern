@@ -4,7 +4,10 @@ import jwt from "jsonwebtoken";
 
 export const getUsers = async (req, res) => {
     try {
-        const users = await Users.findAll();
+        const users = await Users.findAll({
+            // set custom attribute to show
+            attributes:['id', 'name', 'email']
+        });
         res.status(200).json({
             code: 200,
             status: "OK",
