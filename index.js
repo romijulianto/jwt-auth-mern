@@ -3,6 +3,7 @@ import db from "./config/database.js";
 import Users from "./models/user.model.js";
 import router from "./routes/index.js";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 
 /* initiate dotenv */
@@ -22,6 +23,7 @@ try {
 }
 
 /* add middleware */
+app.use(cookieParser()) // to get value from cookie
 app.use(express.json());
 app.use(router);
 
