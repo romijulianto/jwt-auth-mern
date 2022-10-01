@@ -2,6 +2,11 @@ import express from "express";
 import db from "./config/database.js";
 import Users from "./models/user.model.js";
 import router from "./routes/index.js";
+import dotenv from "dotenv";
+
+
+/* initiate dotenv */
+dotenv.config();
 
 /* initaite express */
 const app = express();

@@ -1,5 +1,6 @@
 import Users from "../models/user.model.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const getUsers = async (req, res) => {
     try {
@@ -42,3 +43,24 @@ export const Register = async (req, res) => {
         console.log(error);
     }
 };
+
+/* cretae method/function Login */
+export const Login = async (req, res) => {
+    try {
+        /* initiate findUser = email in database */
+        /* if email exist */
+        const user = await Users.findAll({
+            where: {
+                email: req.body.email
+            }
+        });
+        /* if password match */
+
+    } catch (error) {
+        res.status(404).json({
+            code: 404,
+            status: "NOT_FOUND",
+            message: "Email user tidak terdaftar"
+        })
+    }
+}
