@@ -14,10 +14,10 @@ const app = express();
 /* make sure connection */
 try {
     await db.authenticate();
-    console.log('Database Connected...');
+    console.log('Connection has been established successfully.');
     await Users.sync(); // if in db no table, sequelize automate generated */
 } catch (error) {
-    console.error(error);
+    console.error('Unable to connect to the database: ', error);
     
 }
 
